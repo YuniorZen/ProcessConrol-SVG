@@ -1,0 +1,105 @@
+let msgtype1=[
+    {			
+        "id": 6,
+        "sellerId": 2017,
+        "templateId": "TSFXQfMJsbthW6wA4om2pYhTQEK17anSlUcccbuXM4w",
+        "title": "购买失败通知",
+        "content": "物品名称|购买地点",
+        "example": "奶茶|TIT造舰厂",
+        "createTime": 1515571005483,
+        "type": 1,
+        "noticeType": null,
+        "contentList": null,
+        "exampleList": null,
+        "pageNum": 1,
+        "pageSize": 10
+    }, {
+        "id": 7,
+        "sellerId": 2017,
+        "templateId": "gKvgoHHSkMaYSkAWa_KZ3F2vPs4xn0jFTpXUkLV7rY4",
+        "title": "购买成功通知",
+        "content": "购买地点|购买时间|物品名称",
+        "example": "TIT造舰厂|2016年6月6日|咖啡",
+        "createTime": 1515573150865,
+        "type": 1,
+        "noticeType": null,
+        "contentList": null,
+        "exampleList": null,
+        "pageNum": 1,
+        "pageSize": 10
+    },{
+        "id": 30,
+        "sellerId": 2017,
+        "templateId": "LW5Aw-F_8ChQlLGslVlJEVMG8foDW4y1jnorj4EWIKs",
+        "title": "付款成功通知",
+        "content": "地点|付款时间|付款金额",
+        "example": "TIT时尚造舰中心|2016年9月9日|8元",
+        "createTime": 1515578974225,
+        "type": 1,
+        "noticeType": null,
+        "contentList": null,
+        "exampleList": null,
+        "pageNum": 1,
+        "pageSize": 10
+    }, {
+        "id": 38,
+        "sellerId": 2017,
+        "templateId": "FGJXcHvsdHE7LmjSR3ydXVkOId6OLJJyEjgCNN-YVtI",
+        "title": "待付款提醒",
+        "content": "单号|金额|下单时间|物品名称",
+        "example": "12345|30元|2016年8月8日|苹果",
+        "createTime": 1515724132458,
+        "type": 1,
+        "noticeType": null,
+        "contentList": null,
+        "exampleList": null,
+        "pageNum": 1,
+        "pageSize": 10
+    },{
+        "id": 41,
+        "sellerId": 181097,
+        "templateId": "FGJXcHvsdHE7LmjSR3ydXeb3cEqA-3nbDTF7etW_dRc",
+        "title": "去支付提醒",
+        "content": "金额|商品详情|下单时间|订单号|支付提醒|温馨提示",
+        "example": null,
+        "createTime": 1530844668000,
+        "type": 1,
+        "noticeType": "go_to_pay",
+        "contentList": null,
+        "exampleList": null,
+        "pageNum": 1,
+        "pageSize": 10
+    }
+];
+let msgtype2=[{
+    "id": 42,
+    "sellerId": 181097,
+    "templateId": "123456",
+    "title": "发货通知提醒",
+    "content": "【嗨蜂购】亲爱的{0}，您在嗨蜂购下单的宝贝已经快马加鞭发出啦，请留意信息保持通话畅通，注意当面验货签收哦！回T退订",
+    "example": null,
+    "createTime": 1530844668000,
+    "type": 2,
+    "noticeType": "send_goods_remind",
+    "contentList": null,
+    "exampleList": null,
+    "pageNum": 1,
+    "pageSize": 10
+}, {
+    "id": 43,
+    "sellerId": 181097,
+    "templateId": "1234567",
+    "title": "签收通知提醒",
+    "content": "【嗨蜂购】亲爱的{0}，您购买的宝贝快递已经安全送达，收到后满意记得晒图给我们好评哦，如有问题可第一时间联系客服，感谢支持！回T退订",
+    "example": null,
+    "createTime": 1530844668000,
+    "type": 2,
+    "noticeType": "sign_goods_remind",
+    "contentList": null,
+    "exampleList": null,
+    "pageNum": 1,
+    "pageSize": 10
+}
+];
+
+export  {msgtype1,msgtype2}
