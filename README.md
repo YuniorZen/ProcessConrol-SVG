@@ -26,4 +26,4 @@ npm run dev
 ```
 
 #催付款营销流程图示
-[](https://raw.githubusercontent.com/YuniorZen/ProcessConrol-SVG/master/demo/process-demo.png)
+![](https://raw.githubusercontent.com/YuniorZen/ProcessConrol-SVG/master/demo/process-demo.png)
