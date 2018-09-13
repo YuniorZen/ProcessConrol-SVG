@@ -26,12 +26,10 @@ NodeData.prototype.update=function(node){
     if(this.nodes[node.id]){
         Object.keys(node).forEach(name=>{
             this.nodes[node.id][name]=node[name];
-        })
-        console.log(`更新旧元素：${node.id}`);
+        })       
     }else{
         this.nodes[node.id]=node;     
-        this.count++; 
-        console.log(`添加新入元素：${this.count} #${node.id}`);
+        this.count++;        
     }     
 },
 NodeData.prototype.check=function(node,x,y){
@@ -105,10 +103,10 @@ NodeData.prototype.createPath=function(data){
         from=me.nodes[data.from],       
         id=`path_${Math.random().toString(32).slice(2)}`,
         pxy=(from=>{
-            let fcx=from.position.left+nodeWidth/2,
-                fcy=from.position.top+nodeWidth/2,
-                tcx=data.xy.left+nodeWidth/2,
-                tcy=data.xy.top+nodeWidth/2,               
+            let fcx=from.position.left*1+nodeWidth/2,
+                fcy=from.position.top*1+nodeWidth/2,
+                tcx=data.xy.left*1+nodeWidth/2,
+                tcy=data.xy.top*1+nodeWidth/2,               
                 disx=tcx-fcx,
                 disy=tcy-fcy,
                 flag=disx>0?(disy<0?1:0):(disy>0?1:0);            
@@ -131,10 +129,10 @@ NodeData.prototype.repaintPath=function(data,svg){
         nodeWidth=data.current.getBoundingClientRect().width,    
         id=data.id,
         calcuPath=(from,to)=>{           
-            let fcx=from.left+nodeWidth/2,
-                fcy=from.top+nodeWidth/2,
-                tcx=to.left+nodeWidth/2,
-                tcy=to.top+nodeWidth/2,               
+            let fcx=from.left*1+nodeWidth/2,
+                fcy=from.top*1+nodeWidth/2,
+                tcx=to.left*1+nodeWidth/2,
+                tcy=to.top*1+nodeWidth/2,               
                 disx=tcx-fcx,
                 disy=tcy-fcy,
                 flag=disx>0?(disy<0?1:0):(disy>0?1:0);            
@@ -172,7 +170,7 @@ function ProcessSVG(){
     this.nodeWidth,  
     this.leftDis=0,
     this.topDis=0, 
-    this.rightSpace=150,
+    this.leftSpace=150,
     this.topSpace=45,
     this.isChild=false,
     this.isMove=false,
@@ -346,33 +344,98 @@ ProcessSVG.prototype.drop=function(ev){
         tempnode.drag(
             function(dx,dy,x,y,ev){
                 this.isMove=true;
-                this.dragover(ev);               
+                this.dragover(ev);                     
             },
             function(x,y,ev){               
                 this.isChild=true;
                 this.dragstart(ev);
+                            
             },        
             function(ev){              
                 this.isMove&&this.drop(ev);
-                this.isMove=false;
+                this.isMove=false;                 
             },
             me,me,me
         ); 
         //子节点编辑
-        tempnode.dblclick(function(ev){
-            this.isMove=false;         
-            ev=ev||window.event;
+        tempnode.dblclick(function(ev){         
+            ev=ev||window.event;           
             let node=ev.currentTarget||ev.srcElement,
                 id=node.getAttribute('id'),
                 type=node.getAttribute('data-type');
             if(type=='start'||type=='end')return;
-
-            me.$vue.isEditor=true; 
+         
             me.$vue.editorID=id;
+            me.$vue.editorType=type;
             me.$vue.vnode=JSON.parse(JSON.stringify(me.$vue.vnodes[id]));
         });       
     }      
     this.current=null;
+},
+ProcessSVG.prototype.easyRepaint=function(id,nodes){
+    let me=this;
+    //初始化元素和绘图区域坐标
+    me.create_market=document.querySelector(`#${id}`);
+    me.market_module=me.create_market.querySelector('.market_module');
+    me.market_main=me.create_market.querySelector('#rightSVG');  
+    me.svg=snap('#rightSVG');   
+    me.arrow=me.svg.path("M0,0 L0,4 L4,2 L0,0").attr({fill: "#8bd0bb"}).marker(0, 0, 4, 4, 0, 2);
+    me.leftNodes=me.market_module.querySelectorAll('.node_wraper');
+    me.nodeHeight=me.leftNodes[0].offsetHeight;
+    me.nodeWidth=me.leftNodes[0].offsetWidth; 
+    me.NodeData.nodes=nodes;
+ 
+    Object.keys(nodes).forEach(id=>{    
+        let me=this,
+            node=nodes[id],
+            svgns='http://www.w3.org/2000/svg',
+            htmlns='http://www.w3.org/1999/xhtml',
+            type=node.type,
+            name=node.name,     
+            foreign,      
+            inner=me.market_module.querySelector(`.node_wraper[data-type="${type}"]`);
+
+        foreign=me.svg.el('foreignObject',{
+            'height':me.nodeHeight,
+            'width':me.nodeWidth,
+            'class':'foreignObject',
+            'data-type':type,
+            'data-name':name,
+            'id':id,
+            'x':node.position.left,
+            'y':node.position.top
+        });
+        inner&&(inner=inner.cloneNode(true));
+        inner.querySelector('.node_name').innerHTML=name;
+        inner.setAttribute('xmlns',htmlns);  
+        foreign.append(inner);
+        me.svg.append(foreign);
+        (node.type!='start'&&node.type!='end')&&foreign.click((ev)=>{
+            me.$vue.node=JSON.parse(JSON.stringify(node));
+            me.$vue.isdialog=true;
+        });  
+        //创建path路径   
+        if(type!='start'&&node.prev){
+            let data={from:node.prev, to:id, current:inner, xy:node.position},
+                line=me.NodeData.createPath(data),
+                path,text;  
+
+            path=me.svg.paper.path(line.path).attr({
+                id:line.id,
+                stroke: "#8bd0bb",
+                strokeWidth:2,
+                markerEnd:me.arrow,
+                markerMid:me.arrow,
+                fill:'none'
+            });
+            me.svg.prepend(path); 
+            //添加分支文字
+            if(nodes[node.prev].type=='switch'){
+                text=me.svg.paper.text(0,0,nodes[node.prev].query.yes==id?'是':'否');
+                text.attr({ 'textpath': path, 'fill':'#fff' }).textPath.attr({'startOffset':'49%'});
+            }           
+        }        
+    });   
 },
 ProcessSVG.prototype.calcuXY=function(ev){
     ev=ev||window.event;  
@@ -387,7 +450,7 @@ ProcessSVG.prototype.calcuXY=function(ev){
     //console.log(`mdisx:${me.mdisx},mdisy:${me.mdisy},cx:${cx},cy:${cy}}`)
 
     if(left>maxleft)left=maxleft-5;
-    if(left<me.rightSpace)left=me.rightSpace+5;
+    if(left<me.leftSpace)left=me.leftSpace+5;
     if(top>maxtop)top=maxtop-5;
     if(top<me.topSpace)top=me.topSpace+10;
         
@@ -419,8 +482,10 @@ ProcessSVG.prototype.parseToSVG=function (node) {
     let icon=document.createElement('i');
     icon.className='iconfont icon-delete';
     icon.addEventListener('click',function(ev){          
-        me.NodeData.delete(id,true);
-        this.isMove=false;
+        me.NodeData.delete(id,true);      
+        window.event?window.event.cancelBubble=true:ev.stopPropagation();  
+    },false);
+    icon.addEventListener('mousedown',function(ev){      
         window.event?window.event.cancelBubble=true:ev.stopPropagation();  
     },false);
     inner.appendChild(icon);
@@ -428,8 +493,7 @@ ProcessSVG.prototype.parseToSVG=function (node) {
 
   return  foreign;
 },
-ProcessSVG.prototype.createSwitch=function(node) {
-    if(node.query.yes||node.query.no)return;
+ProcessSVG.prototype.createSwitch=function(node) {  
     let me=this,
         nodeWidth=me.nodeWidth,
         current=document.querySelector(`#${node.id}`),
@@ -539,33 +603,46 @@ ProcessSVG.prototype.initQuery=function(type,query){
         case 'switch':
             query.switchType='',         
             query.yes='',
-            query.no='';   
+            query.no='',
+            query.limitType='none',
+            query.relativeTime='',
+            query.absoluteTime='',
+            query.extra={},
+            query.extra.relativeType='hour',
+            query.extra.days='',
+            query.extra.hours='',
+            query.extra.minutes='';
         break;
 
-        case 'time':
-            query.cyclename='minutes',
+        case 'time':            
             query.cycle='',
-            query.minutes='',
-            query.days='',
-            query.weeks='';           
+            query.extra={},
+            query.extra.cycleType='minutes',
+            query.extra.minutes='',
+            query.extra.days='',
+            query.extra.weeks='';           
         break;
 
-        case 'msg':
-            query.msgType='type1', 
+        case 'msg':          
             query.noticeType=null,
-            query.type1templateId=null,    
-            query.type2templateId=null;
+            query.templateId=null,
+            query.title=null,
+            query.extra={},
+            query.extra.msgType='type1', 
+            query.extra.type1=null,        
+            query.extra.type2=null,  
+            query.extra.type3=null;
         break;
 
-        case 'waiting':
-            query.isabsolute=true,
-            query.relativeType='day',          
+        case 'waiting': 
             query.relativeTime='',
             query.absoluteTime='', 
-            query.absolutedatetime='',              
-            query.days='',
-            query.hours='',
-            query.minutes='';              
+            query.extra={},                 
+            query.extra.days='',
+            query.extra.hours='',
+            query.extra.minutes='',   
+            query.extra.relativeType='hour', 
+            query.extra.timeType='absolute';         
         break;
 
         case 'order':
@@ -576,9 +653,8 @@ ProcessSVG.prototype.initQuery=function(type,query){
             query.productids=[];      
         break;       
 
-        case 'user':
-            query.userPropety='',
-            query.relationship='include',
+        case 'user':           
+            query.relationship='include', 
             query.interrelation="and",
             query.city={	
                 relationship:"include",
@@ -592,13 +668,14 @@ ProcessSVG.prototype.initQuery=function(type,query){
                 relationship:"include",
                 devices:[]
             },
+            query.register={               
+                registerTime:[]
+            },
             query.pay={                 
                 payCondition:{
-                    interrelation:"and",
-                    createTime:[],
+                    interrelation:"and",                 
                     createStartTime:"",
-                    createEndTime:"",
-                    payTime:[],
+                    createEndTime:"",                   
                     payStartTime:"",
                     payEndTime:"",
                     totalCost:{
@@ -620,8 +697,11 @@ ProcessSVG.prototype.initQuery=function(type,query){
                         }                            
                     ]			
                 }
-            };
-
+            },
+            query.extra={},
+            query.extra.userPropety='',
+            query.extra.createTime=[],
+            query.extra.payTime=[];
         break;
     }
 };

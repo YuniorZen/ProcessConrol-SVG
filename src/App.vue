@@ -49,37 +49,55 @@
     </svg>
   </div>
 
-  <node-editor :visiable="isEditor" :id="editorID" :nodedata="vnode"></node-editor>
+  <keep-alive>
+    <TimeNodeEditor v-if="editorType=='time'" :id="editorID" :nodedata="vnode"></TimeNodeEditor>
+
+    <MsgNodeEditor v-if="editorType=='msg'" :id="editorID" :nodedata="vnode"></MsgNodeEditor>
+
+    <WaitingNodeEditor v-if="editorType=='waiting'" :id="editorID" :nodedata="vnode"></WaitingNodeEditor>
+
+    <SwitchNodeEditor v-if="editorType=='switch'" :id="editorID" :nodedata="vnode"></SwitchNodeEditor>
+
+    <OrderNodeEditor v-if="editorType=='order'" :id="editorID" :nodedata="vnode"></OrderNodeEditor>
+
+    <UserNodeEditor v-if="editorType=='user'" :id="editorID" :nodedata="vnode"></UserNodeEditor>
+  </keep-alive>
 
  </div>
 </template>
 
 <script>
-import ProcessSVG from './assets/js/ProcessSVG';
-import NodeEditor from './components/NodeEditor';
+
 let process=null;
+import ProcessSVG from '@/assets/js/ProcessSVG';
+import OrderNodeEditor from '@/components/OrderNodeEditor';
+import UserNodeEditor from '@/components/UserNodeEditor';
+import MsgNodeEditor from '@/components/MsgNodeEditor';
+import TimeNodeEditor from '@/components/TimeNodeEditor';
+import WaitingNodeEditor from '@/components/WaitingNodeEditor';
+import SwitchNodeEditor from '@/components/SwitchNodeEditor';
+
 export default {
-  name:'ProcessControl',
+  name:'App',
   data () {
     return {  
       editorID:null,  
-      isEditor:false,     
+      editorType:null,     
       vnode:null,
       vnodes:null,
       vlines:null
     }
   },
   mounted:function(){
-    //流程框架初始化
     process=new ProcessSVG();
     process.init('createMarket');   
     process.$vue=this; 
     this.vnodes=process.NodeData.nodes; 
     this.vlines=process.NodeData.lines;
   },
-  methods:{    
-    editorConfirm:function(id){
-      let name=this.vnode.name,
+  methods:{ 
+    updateNodeName:function(id){
+      let name=this.vnodes[id].name,
           node=document.querySelector(`#${id}`);
       node.setAttribute('data-name',name);
       node.querySelector('.node_name').innerHTML=name;
@@ -102,13 +120,17 @@ export default {
       }
       if(noNode)return this.$message.error('至少添加一个有效节点');
 
-      //打印节点数据
-      console.log(this.vnodes)
-      this.$alert(JSON.stringify(this.vnodes), '节点数据');  
+      this.$alert(`节点数据:${JSON.stringify(me.vnodes)}`);
+      console.log(me.vnodes);
     }
   },
   components:{
-    NodeEditor
+    OrderNodeEditor,
+    UserNodeEditor,
+    MsgNodeEditor,
+    TimeNodeEditor,
+    WaitingNodeEditor,
+    SwitchNodeEditor
   }
 }
 </script>

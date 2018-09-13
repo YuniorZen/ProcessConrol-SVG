@@ -1,4 +1,4 @@
-let msgtype1=[
+let msgtype0=[
     {			
         "id": 6,
         "sellerId": 2017,
@@ -71,6 +71,36 @@ let msgtype1=[
         "pageSize": 10
     }
 ];
+let msgtype1=[{
+    "id": 42,
+    "sellerId": 181097,
+    "templateId": "123456",
+    "title": "发货通知提醒",
+    "content": "【嗨蜂购】亲爱的{0}，您在嗨蜂购下单的宝贝已经快马加鞭发出啦，请留意信息保持通话畅通，注意当面验货签收哦！回T退订",
+    "example": null,
+    "createTime": 1530844668000,
+    "type": 2,
+    "noticeType": "send_goods_remind",
+    "contentList": null,
+    "exampleList": null,
+    "pageNum": 1,
+    "pageSize": 10
+}, {
+    "id": 43,
+    "sellerId": 181097,
+    "templateId": "1234567",
+    "title": "签收通知提醒",
+    "content": "【嗨蜂购】亲爱的{0}，您购买的宝贝快递已经安全送达，收到后满意记得晒图给我们好评哦，如有问题可第一时间联系客服，感谢支持！回T退订",
+    "example": null,
+    "createTime": 1530844668000,
+    "type": 2,
+    "noticeType": "sign_goods_remind",
+    "contentList": null,
+    "exampleList": null,
+    "pageNum": 1,
+    "pageSize": 10
+}
+];
 let msgtype2=[{
     "id": 42,
     "sellerId": 181097,
@@ -102,4 +132,4 @@ let msgtype2=[{
 }
 ];
 
-export  {msgtype1,msgtype2}
+export  {msgtype0,msgtype1,msgtype2}

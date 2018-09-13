@@ -1,4 +1,14 @@
-html {
+  @font-face {
+    font-family: "PingFangSC";
+    src:url("../fonts/PingFangSC.eot"), /* IE9 */
+        url("../fonts/PingFangSC.woff") format("woff"), /* chrome、firefox */
+        url("../fonts/PingFangSC.ttf") format("truetype"), /* chrome、firefox、opera、Safari, Android, iOS 4.2+ */  
+        url("../fonts/PingFangSC.svg#PingFangSC") format("svg"); /* iOS 4.1- */
+    font-style: normal;
+    font-weight: normal;
+  }
+
+  html {
     font-family: sans-serif;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
